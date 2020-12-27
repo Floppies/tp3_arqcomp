@@ -17,7 +17,7 @@ reg     i_clock     ,   i_reset     ;
 
 //  Outputs
 wire    [BITS-1:0]      o_Data      ;
-wire                     flag        ;
+wire                    flag        ;
 
 initial
     begin
@@ -27,52 +27,6 @@ initial
         
         #20
         i_reset     =       1'b0    ;
-        //i_clock     =       1'b0    ;
-        /*
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;
-        
-        #10
-        i_clock     =       1'b0    ;
-        
-        #10
-        i_clock     =       1'b1    ;*/
         
         #10000000
         i_clock     =       1'b0    ;

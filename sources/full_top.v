@@ -15,8 +15,8 @@ module full_top #(
 (
     input       wire                    i_clock     ,
     input       wire                    i_reset     ,
-    output      wire    [BITS-1:0]      o_Data      ,
-    output      reg                     flag
+    output      reg                     flag        ,
+    output      wire    [BITS-1:0]      o_Data
 );
 
 //  Auxiliary wiring
@@ -27,9 +27,23 @@ wire                            clk_out1    ,   locked  ;
 
 reg                             reset                   ;
 
-always  @(i_reset)
-    flag    <=   1'b0    ;
+always  @(clk_out1)
+begin
+    if(locked)
+        flag    <=   1'b1    ;
+    else
+        flag    <=   1'b0    ;
+end
 
+always  @(clk_out1)
+begin
+    if(flag)
+        reset   <=  1'b0    ;
+    else
+        reset   <=  clk_out1;
+end
+
+/*
 always @(clk_out1)
 begin
     if(clk_out1 && locked && ~flag)
@@ -39,14 +53,25 @@ begin
     end
     else
         reset   <=   1'b0    ;
+end*/
+/*
+always @(posedge clk_out1, posedge locked)
+begin
+    if(locked && ~flag)
+    begin
+        reset   =   1'b1    ;
+        flag    =   1'b1    ;
+    end
+    else
+        reset   =   1'b0    ;
 end
-
+*/
 processor   #(
     .BITS           (BITS)          ,
     .DTBITS         (DTBITS)        ,
     .OPBITS         (OPBITS)        ,
     .S_BITS         (S_BITS)
-)   PROC
+)   PROCPROC
 (
     .i_clock        (clk_out1)      ,
     .i_reset        (reset)         ,
