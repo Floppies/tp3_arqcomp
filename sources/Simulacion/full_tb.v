@@ -17,7 +17,7 @@ reg     i_clock     ,   i_reset     ;
 
 //  Outputs
 wire    [BITS-1:0]      o_Data      ;
-wire                    flag        ;
+wire    flag    ,   tx  ,   tx_done ;
 
 initial
     begin
@@ -51,6 +51,8 @@ full_top    #(
     .i_clock        (i_clock)       ,
     .i_reset        (i_reset)       ,
     .flag           (flag)          ,
+    .tx_done        (tx_done)       ,
+    .tx             (tx)            ,
     .o_Data         (o_Data)
 );
 
