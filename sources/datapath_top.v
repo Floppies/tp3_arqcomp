@@ -10,7 +10,7 @@ module datapath_top #(
     input   wire    [E_BITS-1:0]    i_Data_ram  ,
     input   wire    [S_BITS-1:0]    sel_A       ,
     input   wire    i_op,   w_acc,  sel_B       ,
-    //input   wire    i_clock ,       i_reset     ,
+    input   wire    i_clock ,       i_reset     ,
     output  wire    [D_BITS-1:0]    o_Addr_ram  ,
     output  wire    [E_BITS-1:0]    o_Data_ram
 );
@@ -74,8 +74,8 @@ accumulator
     .E_BITS     (E_BITS)
 )   ACC
 (
-    //.i_clock    (i_clock)           ,
-    //.i_reset    (i_reset)           ,
+    .i_clock    (i_clock)           ,
+    .i_reset    (i_reset)           ,
     .enable     (w_acc)             ,
     .i_mux      (selA_to_acc)       ,
     .o_acc      (o_acc)

@@ -11,7 +11,7 @@ module control_top  #(
     output  wire    [DTBITS-1:0]    o_Data  ,
     output  wire    [DTBITS-1:0]    o_Addr  ,
     output  wire    [1:0]           sel_A   ,
-    output  wire        sel_B   ,   o_op    ,
+    output  wire    sel_B,  o_op,   h_flg   ,
     output  wire    w_acc,  w_ram,  r_ram
 );
 
@@ -60,6 +60,7 @@ decoder
     .w_ram      (w_ram)         ,
     .o_op       (o_op)          ,
     .r_ram      (r_ram)         ,
+    .h_flg      (h_flg)         ,
     .w_pc       (w_pc)
 );
 

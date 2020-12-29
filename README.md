@@ -3,7 +3,7 @@ Trabajo Practico de Laboratorio Numero 3: BIPS I
 
 ## Consigna
 
-Implementar 
+Implementar un procesador basico para la educacion especificado en el paper "A Basic Processor for Teaching Digital Circuits and Systems Design with FPGA". En especifico, solo se tiene que implementar el BIP I, la version mas simple que no incluye las instrucciones de salto.
 
 <img src="imagenes/ModulosUART.png" alt="Modulos UART" width="400"/>
 

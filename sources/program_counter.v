@@ -16,8 +16,8 @@ always  @(posedge i_clk)
             o_pc        <=      11'b0   ;
         else if (enable)
             o_pc        <=      i_inc   ;
-        else
-            o_pc        <=      11'b0   ;
+        /*else
+            o_pc        <=      11'b0   ;*/
     end
 
 endmodule

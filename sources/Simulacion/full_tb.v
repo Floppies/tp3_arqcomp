@@ -1,4 +1,4 @@
-`timescale 10ns / 10ns
+`timescale 1ns / 1ns
 
 module full_tb();
 
@@ -15,33 +15,28 @@ localparam  DATA_LENGTH     =   16              ;
 //  Inputs
 reg     i_clock     ,   i_reset     ;
 
-
 //  Outputs
-wire    [BITS-1:0]      o_Data_ram  ;
-wire    [BITS-1:0]      o_Data_rom  ;
+wire    [BITS-1:0]      o_Data      ;
+wire    flag    ,   tx  ,   tx_done ;
 
 initial
     begin
         
-        i_reset     =       1'b0    ;
-        i_clock     =       1'b0    ;
-        
-        #100
         i_reset     =       1'b1    ;
+        i_clock     =       1'b1    ;
         
-        #100
+        #10
         i_reset     =       1'b0    ;
         
-        #100000
-        i_clock     =       1'b1    ;
+        #100000000
+        i_clock     =       1'b0    ;
     end
-    
+
 always begin
-    #100
+    #10
     i_clock = ~i_clock;
 end
-
-full    #(
+full_top    #(
     .BITS           (BITS)          ,
     .DTBITS         (DTBITS)        ,
     .OPBITS         (OPBITS)        ,
@@ -51,12 +46,14 @@ full    #(
     .WORD_WIDTH     (WORD_WIDTH)    ,
     .ADDR_LENGTH    (ADDR_LENGTH)   ,
     .DATA_LENGTH    (DATA_LENGTH)
-)  TOP
+)  TOPTOP
 (
     .i_clock        (i_clock)       ,
     .i_reset        (i_reset)       ,
-    .o_Data_ram     (o_Data_ram)    ,
-    .i_Data_rom     (o_Data_rom)
+    .flag           (flag)          ,
+    .tx_done        (tx_done)       ,
+    .tx             (tx)            ,
+    .o_Data         (o_Data)
 );
 
 endmodule

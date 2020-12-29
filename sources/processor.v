@@ -16,7 +16,7 @@ module processor    #(
     input   wire    [BITS-1:0]      i_Data_ram  ,
     output  wire    [BITS-1:0]      o_Data_ram  ,
     output  wire    [DTBITS-1:0]    o_Addr_ram  ,
-    output  wire        Wr      ,   Rd
+    output  wire    Wr  ,   Rd  ,   halt_flag
 );
 
 //  Auxiliary wiring
@@ -30,8 +30,8 @@ datapath_top    #(
     .S_BITS         (S_BITS)
 )   DATATOP
 (
-    //.i_clock        (i_clock)       ,
-    //.i_reset        (i_reset)       ,
+    .i_clock        (i_clock)       ,
+    .i_reset        (i_reset)       ,
     .i_Data         (ctrl_to_dtp)   ,
     .i_Data_ram     (i_Data_ram)    ,
     .sel_A          (sel_A)         ,
@@ -59,6 +59,7 @@ control_top #(
     .w_acc          (enable_acc)    ,
     .o_op           (op_s)          ,
     .w_ram          (Wr)            ,
+    .h_flg          (halt_flag)     ,
     .r_ram          (Rd)
 );
 

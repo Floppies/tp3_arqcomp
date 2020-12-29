@@ -12,6 +12,7 @@ module decoder  #(
     output  reg                 w_ram   ,   //  Habilita la escritura en la memoria de datos (RAM)
     output  reg                 w_pc    ,   //  Habilita la escritura del PC
     //output  reg                 r_pc    ,   //  Resetea al PC
+    output  reg                 h_flg   ,
     output  reg                 r_ram   ,   //  Habilita la lectura de la memoria de datos (RAM)
     output  reg                 o_op        //  Operacion que se va a realizar en la ALU
 );
@@ -27,7 +28,7 @@ localparam  [4:0]
     SUB         =       5'b00110    ,   //  Substract Variable
     SUBI        =       5'b00111    ;   //  Substract Immediate
     
-reg         halt_flag       ;   //  Bandera que para el decodificador despues de una instruccion de HALT
+//reg         halt_flag       ;   //  Bandera que para el decodificador despues de una instruccion de HALT
 
 
 //  Modulo para modificar sel_A
@@ -97,8 +98,11 @@ begin
 end
 
 //  Modulo para modificar w_acc
-always  @(i_clk, op_code)
+always  @(i_clk,    op_code)
 begin
+    /*if  (i_clk)
+        w_acc       <=      1'b0    ;
+    else*/
         case    (op_code)
             HLT:
                 w_acc       <=      1'b0    ;
@@ -124,13 +128,13 @@ begin
 end
 
 //  Modulo para modificar w_pc
-always  @(i_clk,    op_code, halt_flag)
+always  @(i_clk,    op_code, h_flg)
 begin
     if  (i_clk)
         w_pc        <=      1'b0    ;
     else
     begin
-        if  (~halt_flag)
+        if  (~h_flg)
         begin
             case    (op_code)
                 HLT:
@@ -145,13 +149,12 @@ begin
 end
 
 //  Modificar la bandera de halt
-always  @(posedge i_clk, posedge i_rst)
+always  @(i_clk, i_rst, op_code)
 begin
     if(i_rst)
-        halt_flag   <=      1'b0    ;
-    else if  (op_code == HLT)
-        halt_flag   <=      1'b1    ;
+            h_flg       <=      1'b0    ;
+    else if(i_clk   &&  op_code == HLT)
+            h_flg       <=      1'b1    ;
 end
-
 
 endmodule

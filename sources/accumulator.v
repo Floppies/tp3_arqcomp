@@ -17,8 +17,18 @@ initial
 
 always  @(negedge i_clock)
     begin
-        if  (enable)
-            o_acc       <=      i_mux           ;
+        if(i_reset)
+            o_acc       <=      16'b0        ;
+        else if  (enable)
+            o_acc       <=      i_mux        ;
     end
-
+/*
+always  @(negedge i_clock,  posedge i_reset, posedge enable)
+begin
+    if  (i_reset)
+        o_acc       <=      16'b0           ;
+    else if (enable)
+        o_acc       <=      i_mux           ;
+end
+*/
 endmodule
