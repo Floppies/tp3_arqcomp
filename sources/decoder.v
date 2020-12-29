@@ -81,7 +81,7 @@ end
 //  Modulo para habilitar la lectura de la ram
 always  @(i_clk, op_code)
 begin
-    if  (i_clk)
+    if  (~i_clk)
         r_ram       <=      1'b0    ;
     else
         case    (op_code)
@@ -97,11 +97,8 @@ begin
 end
 
 //  Modulo para modificar w_acc
-always  @(i_clk,    op_code)
+always  @(i_clk, op_code)
 begin
-    if  (i_clk)
-        w_acc       <=      1'b0    ;
-    else
         case    (op_code)
             HLT:
                 w_acc       <=      1'b0    ;

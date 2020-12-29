@@ -1,7 +1,6 @@
 `timescale 10ns / 10ns
 
-module full_top #(
-
+module full    #(
     parameter   BITS            =   16              ,
     parameter   DTBITS          =   BITS - 5        ,
     parameter   OPBITS          =   BITS - DTBITS   ,
@@ -13,65 +12,28 @@ module full_top #(
     parameter   DATA_LENGTH     =   16
 )
 (
-    input       wire                    i_clock     ,
-    input       wire                    i_reset     ,
-    output      reg                     flag        ,
-    output      wire    [BITS-1:0]      o_Data      ,
-    output      wire            tx  ,   tx_done
+    input   wire            i_reset,    i_clock     ,
+    output  wire    [BITS-1:0]      i_Data_rom      ,
+    output  wire    [BITS-1:0]      o_Data_ram
 );
 
 //  Auxiliary wiring
-wire    [BITS-1:0]      i_Data_rom, i_Data_ram  ;
-wire    [DTBITS-1:0]    o_Addr_rom, o_Addr_ram  ;
-wire                    w_ram   ,   r_ram       ;
-wire                    clk_out1    ,   locked  ;
-wire                    halt_flag               ;
-
-reg                     reset                   ;
-
-always  @(clk_out1)
-begin
-    if(locked)
-        flag    <=   1'b1    ;
-    else
-        flag    <=   1'b0    ;
-end
-
-always  @(clk_out1)
-begin
-    if(flag)
-        reset   <=  1'b0    ;
-    else
-        reset   <=  clk_out1;
-end
-
-processor   #(
-    .BITS           (BITS)          ,
-    .DTBITS         (DTBITS)        ,
-    .OPBITS         (OPBITS)        ,
-    .S_BITS         (S_BITS)
-)   PROCPROC
-(
-    .i_clock        (clk_out1)      ,
-    .i_reset        (reset)         ,
-    .i_Data_rom     (i_Data_rom)    ,
-    .i_Data_ram     (i_Data_ram)    ,
-    .o_Data_ram     (o_Data)        ,
-    .o_Addr_rom     (o_Addr_rom)    ,
-    .o_Addr_ram     (o_Addr_ram)    ,
-    .halt_flag      (halt_flag)     ,
-    .Wr             (w_ram)         ,
-    .Rd             (r_ram)
-);
+wire        [S_BITS-1:0]        sel_A       ;
+wire        sel_B,  enable_acc, op_s        ;
+wire        [DTBITS-1:0]        ctrl_to_dtp ;   //  Datos desde el control al datapath
+wire                Wr  ,       Rd          ;
+wire        [DTBITS-1:0]        Addr_rom    ;
+wire        [DTBITS-1:0]        Addr_ram    ;
+wire        [BITS-1:0]          i_Data_ram  ;
 
 pm_rom  #(
     .MEM_SIZE       (MEM_SIZE_ROM)  ,
     .WORD_WIDTH     (WORD_WIDTH)    ,
     .ADDR_LENGTH    (ADDR_LENGTH)   ,
     .DATA_LENGTH    (DATA_LENGTH)
-)   PMROM
+)   ROM
 (
-    .i_Addr         (o_Addr_rom)    ,
+    .i_Addr         (Addr_rom)      ,
     .o_Data         (i_Data_rom)
 );
 
@@ -80,33 +42,52 @@ dm_ram  #(
     .WORD_WIDTH     (WORD_WIDTH)    ,
     .ADDR_LENGTH    (ADDR_LENGTH)   ,
     .DATA_LENGTH    (DATA_LENGTH)
-)   DMRAM
+)   RAM
 (
-    .i_Addr         (o_Addr_ram)    ,
-    .i_Data         (o_Data)        ,
-    .Wr             (w_ram)         ,
-    .Rd             (r_ram)         ,
+
+    .i_Addr         (Addr_ram)      ,
+    .i_Data         (o_Data_ram)    ,
+    .Wr             (Wr)            ,
+    .Rd             (Rd)            ,
     .o_Data         (i_Data_ram)
 );
 
-clk_wiz_0 CLKCLK
+datapath_top    #(
+    .E_BITS         (BITS)          ,
+    .D_BITS         (DTBITS)        ,
+    .S_BITS         (S_BITS)
+)   DATA
 (
-    // Clock out ports  
-    .clk_out1(clk_out1),
-    // Status and control signals               
-    .reset(i_reset), 
-    .locked(locked),
-    // Clock in ports
-    .clk_in1(i_clock)
+    .i_clock        (i_clock)       ,
+    .i_reset        (i_reset)       ,
+    .i_Data         (ctrl_to_dtp)   ,
+    .i_Data_ram     (i_Data_ram)    ,
+    .sel_A          (sel_A)         ,
+    .sel_B          (sel_B)         ,
+    .w_acc          (enable_acc)    ,
+    .i_op           (op_s)          ,
+    .o_Addr_ram     (Addr_ram)      ,
+    .o_Data_ram     (o_Data_ram)
 );
 
-uart_full   UARTTX
+
+control_top #(
+    .BITS       (BITS)      ,
+    .DTBITS     (DTBITS)    ,
+    .OPBITS     (OPBITS)
+)   CON
 (
-    .i_clock        (clk_out1)      ,
-    .i_reset        (reset)         ,
-    .i_Data         (o_Data)        ,
-    .tx_start       (halt_flag)     ,
-    .tx_done        (tx_done)       ,
-    .tx             (tx)
+    .i_clk          (i_clock)       ,
+    .i_rst          (i_reset)       ,
+    .i_Data         (i_Data_rom)    ,
+    .o_Data         (ctrl_to_dtp)   ,
+    .o_Addr         (Addr_rom)      ,
+    .sel_A          (sel_A)         ,
+    .sel_B          (sel_B)         ,
+    .w_acc          (enable_acc)    ,
+    .o_op           (op_s)          ,
+    .w_ram          (Wr)            ,
+    .r_ram          (Rd)
 );
+
 endmodule
