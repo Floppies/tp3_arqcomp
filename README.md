@@ -3,118 +3,131 @@ Trabajo Practico de Laboratorio Numero 3: BIPS I
 
 ## Consigna
 
-Implementar un procesador basico para la educacion especificado en el paper "A Basic Processor for Teaching Digital Circuits and Systems Design with FPGA". En especifico, solo se tiene que implementar el BIP I, la version mas simple que no incluye las instrucciones de salto.
+Implementar un procesador basico para la educacion especificado en el paper "A Basic Processor for Teaching Digital Circuits and Systems Design with FPGA". En especifico, solo se tiene que implementar el BIP I, la version mas simple que no incluye las instrucciones de salto. Ademas, se tiene que agregar un modulo transmisor UART para mandar el valor actual del acumulador.
 
-<img src="imagenes/ModulosUART.png" alt="Modulos UART" width="400"/>
+<img src="imagenes/DiagramaCompleto.png" alt="Diagrama Completo Simple" width="400"/>
+
+## Arquitectura
+
+Es una arquitectura orientada al acumulador. Los datos y las instrucciones son 16 bits. Solo hay un tipo de dato (integer), un tipo de instruccion y dos tipos de direccionamiento, inmediato e indirecto.
+
+El procesador es monociclo, es decir que la instruccion se completa en un ciclo de reloj, por ende la organizacion es Hardvard. Con esto se simplifica la obtencion y ejecucion de las instrucciones. La unidad de control es completamente combinacional para facilitar la implementacion.
+
+Los registros estan limitados. Solo se usan 2:
+- El Contadr de Programa (PC, Program Counter): que guarda la direccion de la instruccion actual.
+- El Acumulador (ACC; Accumulator): que trabaja como el operando implicito para muchas instrucciones.
+
+<img src="imagenes/DiagramaCompletoC.png" alt="Diagrama Completo Complejo" width="400"/>
 
 ### Funcionamiento
 
-La transmision UART es un modo de transmision asincrono de simbolos que viajan en serie. Antes de la transmision, ambas partes de la comunicacion establecen en conjunto unos parametros que despues serviran para recupperar el sincronismo. Estos son el Baud Rate, la cantidad de bits del dato, de stop y de paridad, si existiese.
+El Procesador lee las instrucciones que se encuentran en la memoria del programa. El set de instrucciones es el siguiente.
 
-<img src="imagenes/FuncionamientoUART.png" alt="Funcionamiento UART" width="400"/>
+<img src="imagenes/InstSet.png" alt="lista DE OPERACIONES" width="400"/>
 
-Luego, el funcionamiento del sistema total consta de:
-- Recibir 3 datos, dos operandos y un operador. El operador es de 6 bits y responde a la codificacion de operaciones del TP anterior.
-- La interfaz procesa estos datos y, usando el modulo combinacional ALU, obtiene el resultado.
-- Este resultado es enviado por el transmisor.
+### Formato de instruccion
 
-## Diseño
+- Opcode: es un campo de 5 bits que identifica la operacion que se debe ejecutar segun la instruccion.
+- Operand: es un campo de 11 bits que identifica un operando para la instruccion. Puede representar un dato literal o una direccion dentro de la memoria de datos.
 
-Se diseño un modulo TOP que incializa todos los modulos requeridos y los conecta entre si. Ademas se establece como valores de transmision por defecto, un clock de 50MHz y un Baud Rate de 9600, lo cual hace que el generador de pulsos se un contador modulo 163. Tambien se decidio que los bits de datos son 8 y que el bit de stop es uno solo. No se envian bits de paridad ni se hace correccion de errores.
+<img src="imagenes/InstFormat.png" alt="lista DE OPERACIONES" width="400"/>
 
-<img src="imagenes/ModuloTopEsquematico.png" alt="Esquematico del Top" width="800"/>
+### Espacio de memoria
 
-## Implementación
+El espacio de direccionamiento de memoria esta organizado en un espacio para la memoria de programa de 2K palabras y un espacio de memoria de datos de 1K palabras. También hay una espacio de dispositivos de entrada y salida de 1K palabras que sirven para iustrar el acceso a drivers basicos como LEDs y otros perifericos mas complejos.
 
-Para implementar los modulos relacionados con la transmision, se tomaron los codigos del libro "FPGA Prototyping by Verilog Examples". La interfaz fue implementada de manera similar.
+<img src="imagenes/AddrSpace.png" alt="Espacio de direcciones" width="400"/>
 
-### Modulos UART
+## Organizacion
 
-Ambos, receptor y transmisor, son maquinas de estados.
-El receptor tiene un estado de repaso donde espera que el pulso de la señal baje, lo cual indica que se esta transmitiendo un dato. Luego pasa un estado de comienzo donde se empieza la rutina del sombremuestreo. El receptor "divide" en 16 el pulso de reloj que esta recibiendo. Cuando cuenta 7 segmentos, pasa a un estado de datos, en el cual cada vez que su cuenta llega a 16, toma el dato que recibe. Esto se debe a que, con el metodo de contar hasta 7 y despues hasta 16 por cada bit de dato, el receptor puede suponer que se encuentra a la mitad del pulso y por ende no va a hacer una lectura incorrecta.
+Al esquema que se encuentra en el paper se le agrego tambien un modulo UART para satisfacer el requerimiento de transmitir en serie el valor del ACC cuando termina el programa.
 
-<img src="imagenes/BlockDiagramRx.png" alt="Diagrama de Bloques del receptor" width="400"/>
-<img src="imagenes/DiagramRx.png" alt="Diagrama de Flujo del receptor" width="400"/>
+<img src="imagenes/TopEsquematico.png" alt="DIAGRAMA COMPLETO" width="800"/>
 
-El transmisor tiene una logica similar nada mas que no hace el sobremuestreo. Simplemente, en cada pulso que le llega del generador del Baud Rate, envia un dato de manera serial. Ademas, cuenta de una entrada extra que le señala que tiene que comenzar la transmision.
+### Modulo CONTROL
 
-<img src="imagenes/DiagramEstado.png" alt="Diagrama de Estados del transmisor" width="400"/>
+Toma las instrucciones de la memoria de programa, las decodifica y manda todas las señales de control al Datapath. Esta compuesto por:
 
-El generador de Baud Rate no es mas que un contador de modulo 163. Es decir que toma los pulsos del clock de entrada y los cuenta, cada vez que llegue a 163, muestra un pulso en la salida.
+- Contador de Programa (PC): es un registro de 11 bit que guarda la direccion de la instruccion.
+- Incrementador (INC): Es un sumador que le suma 1 a la direccion que esta en el PC.
+- Decodificador (DEC, Decoder): Es un circuito puramente combinacional que decodifica la operación que se encuentra en los bits mas significativos de la instruccion, el Opcode. Al procesarlo, manda todas las señales de control necesarias al Datapath.
 
-### Modulo Interfaz
+<img src="imagenes/EsquematicoCONTROL.png" alt="Control schematic" width="800"/>
 
-Este modulo es basicamente una maquina de 4 estados que va guardando los datos recibidos y va cambiando de estado cada vez que se recibe un dato nuevo. Una vez recibido el ultimo dato en una secuencia de: operando, operando y operacion; se da una señal al transmisor para que comience a enviar lo que se encuentra en la salida result que es el resultado que sale de la ALU. Este resultado se obtiene de inmediato en la presencia de los operandos y el operador ya que la ALU es un modulo combinacional.
+### Modulo DATAPATH
 
-<img src="imagenes/EstadosInterfaz.png" alt="Diagrama de Estados del transmisor" width="400"/>
+Procesa los datos segun los comandos enviado por el bloque de Control. Incluye los siguientes modulos:
 
-### Aclaraciones
+- Acumulador (ACC): Es un registro de 16 bits que guarda resultados de la alu, el operando de la instruccion o un dato traido de la memoria de datos.
+- Unidad aritmetica-logica (ALU): Es una alu de 16 bits que solo suma o resta.
+- Extension de señal (Signal Extension): Es un bloque que extiende la señal de 11 bit a 16.
+- Dos multiplexores: uno que maneja la entrada al acumulador entre la salida de la ALU, la señal extendida o la entrada de la memoria de datos; y otro que elige una de las entradas de la ALU entre la señal extendida y lo que entra desde la memoria de datos.
 
-- Por razones de diseño, hay un ciclo de reloj en el que se esta enviando los datos y no se pueden recibir operandos.
-- La señal que manda el codigo de operacion dentro de la interfaz trunca los 2 bits menos significativos.
+<img src="imagenes/EsquematicoDATAPATH.png" alt="Datapath schematic" width="800"/>
+
+### Memoria de Programa
+
+Esta implementada como una memoria ROM de palabras de 16 bits y un espacio de direccion de 11 bits(2K Words).
+
+<img src="imagenes/EsquematicoPMROM.png" alt="PMROM schematic" width="800"/>
+
+### Memoria de Datos
+
+Esta implementada como una memoria RAM de palabras de 16 bits y un espacio de direccion de 11 bits(2K Words). Su lectura y escritura son sincronas al clock.
+
+<img src="imagenes/EsquematicoDMRAM.png" alt="DMRAM schematic" width="800"/>
+
+### Modulo UART
+
+Es el mismo modulo implementado en el TP2 aunque sin el receptor. El Baudrate es de 9600 para un reloj de 50MHz. 
+
+<img src="imagenes/EsquematicoUART.png" alt="UART schematic" width="800"/>
+
+### Clocking Wizard
+
+Se usa este modulo para tener mayor control en la señal de clock que va a ingresar a los modulos. El parametro que se especifico fue solamente la frecuencia del clock pero se puede jugar con el jitter, los delays, etc. Se setea la salida a 50MHz.
 
 ## Testing
 
-Se hicieron varios testbench para probar la funcionalidad de cada modulo en particular. Todos estos tienen una metodologia no automatizada y son bastante simples de entender. Luego
-se realizo un testbench del sistema completo.
+Se hicieron varios testbench para probar la funcionalidad de cada modulo en particular. Todos estos tienen una metodologia no automatizada y son bastante simples de entender. Luego se realizo un testbench del sistema completo.
 
 ### Testing completo
 
-El procedimiento es el siguiente:
+Para el test completo se redujeron los tamaños de las memorias por simplicidad. El programa que se utilizo para la prueba es el siguente.
 
-- Se manda un pulso de reset para inicializar correctamente el sistema.
-- Se genera toda la trama UART secuencialmente enviando 2 operandos y una operacion, mas especificamente dos 8'h01 y un 8'20 que es el codigo de la suma.
-- Se instancia el modulo top dandole: la señal de entrada con la trama, la señal de reset y de clock, y, como salidas, el resultado y un cable para saber si se termino la transmision.
-
-**Ejemplo de trama UART para enviar h01**
 ``` v
-//DATO 1 = 8'h1
-      #3250
-      i_data            =   1'b1    ; //idle
-      #50000
-      i_data            =   1'b0    ; //Start
-      #50000
-      i_data            =   1'b1    ; //Data
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;
-      #50000
-      i_data            =   1'b0    ;   //  Stop
+0001100000000100 //LDI 4
+0010100000000001 //ADDI 1
+0011100000000010 //SUBI 2
+0000100000000000 //STO 0
+0010000000000000 //ADD 0
+0000100000000001 //STO 1
+0011000000000000 //SUB 0
+0001000000000001 //LD 1
+0000000000000000 //HLT
 ```
+El dato que se deberia enviar al ultimo es h0006.
 
 ## Analisis
 
 ### Simulación de comportamiento
 
-La simulacion cumplen el comportamiento establecido. Se puede observar la trama UART que se estableció en el testbench y el resultado que es transmitido en serie. La señal tx_done sirve para visualizar cuando se termino la transmision.
+EXPLICARLA.
 
 <img src="imagenes/SimulacionComportamiento.png" alt="Simulacion del comportamiento" width="800"/>
 
 ### Simulación Post-Sintesis con tiempo
 
-Se ve la misma salida que la simulacion anterior con la diferencia que ahora hay algunos pulsos en la señal tx_done pero no causan inconveniente en el funcionamiento requerido.
+EXPLICAR
 
 <img src="imagenes/SimulacionTiming.png" alt="Simulacion con timing" width="800"/>
 
 ### Analisis de Timing
 
-Se establecio un archivo de constraint para poner como parametro un clock de 50MHz que era uno de los supuestos de diseño. Al hacer esto se puede observar el archivo del report de Timing. Este indica que en el tiempo de Setup, el Worst Negative Slack (la diferencia entre el clock y el delay del trayecto mas largo del circuito) da un valor positivo de aproximadamente 17ns, lo cual es algo deseado.
+Analisis. Explicar los clocks.
 
 <img src="imagenes/AnalisisTiming.png" alt="Analisis de timing" width="800"/>
 
 ### Errores encontrados
 
-En las primeras iteraciones, el funcionamiento con el testing de comportamiento era correcto pero, a la hora de sintetizar el circuito y simularlo, el modulo de la interfaz no se sintetizaba. Esto se debia a que los estados estaban mal descriptos y generaban latchs.
-
-Tambien hubieron errores en la simulacion con timing ya que el clock generado era muy rapido. La solucion fue cambiar el paso de simulacion.
+Contar los erroes.
