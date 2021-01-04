@@ -4,9 +4,9 @@ module alu   #(
     parameter   E_BITS      =   16
 )
 (
-    input   wire                    i_op    ,
-    input   wire    [E_BITS-1:0]    op_1    ,
-    input   wire    [E_BITS-1:0]    op_2    ,
+    input   wire                    i_op    ,   //  Bits que seleccionan la suma o la resta
+    input   wire    [E_BITS-1:0]    op_1    ,   //  Entrada que proviene del acumulador
+    input   wire    [E_BITS-1:0]    op_2    ,   //  Entrada que proviene del Selector B
     output  reg     [E_BITS-1:0]    o_res
 );
 

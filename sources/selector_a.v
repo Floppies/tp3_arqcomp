@@ -5,10 +5,10 @@ module selector_a   #(
     parameter   S_BITS      =   2
 )
 (
-    input   wire    [S_BITS-1:0]    sel_A   ,
-    input   wire    [E_BITS-1:0]    i_Ram   ,
-    input   wire    [E_BITS-1:0]    i_ext   ,
-    input   wire    [E_BITS-1:0]    i_alu   ,
+    input   wire    [S_BITS-1:0]    sel_A   ,   //  Bits que selecciona la salida del multiplexor
+    input   wire    [E_BITS-1:0]    i_Ram   ,   //  Entrada de datos que provienen de la RAM
+    input   wire    [E_BITS-1:0]    i_ext   ,   //  Entrada que proviene del extensor de se;al (generalmente operando literal en la instruccion)
+    input   wire    [E_BITS-1:0]    i_alu   ,   // Entrada que proviene del resultado de la ALU
     output  reg     [E_BITS-1:0]    o_mux
 );
 

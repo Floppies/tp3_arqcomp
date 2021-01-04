@@ -4,9 +4,9 @@ module selector_b   #(
     parameter   E_BITS      =   16
 )
 (
-    input   wire                    sel_B   ,
-    input   wire    [E_BITS-1:0]    i_Ram   ,
-    input   wire    [E_BITS-1:0]    i_ext   ,
+    input   wire                    sel_B   ,   //  Bits que sellecionan la salida del multiplexor
+    input   wire    [E_BITS-1:0]    i_Ram   ,   //  Entrada de datos que provienen de la RAM
+    input   wire    [E_BITS-1:0]    i_ext   ,   //  Entrada de la salida del externsor de se;al
     output  reg     [E_BITS-1:0]    o_mux
 );
 

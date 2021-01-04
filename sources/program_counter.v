@@ -11,7 +11,7 @@ module program_counter  #(
     output  reg     [MSB-1:0]   o_pc        //  Salida
 );
 
-reg             halted      ;
+reg             halted      ;       //  Bandera que se;ala que se llego a una instruccion de HALT
 
 always  @(posedge i_clk)
     begin
