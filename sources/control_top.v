@@ -42,6 +42,7 @@ program_counter
     .i_rst      (i_rst)         ,
     .i_clk      (i_clk)         ,
     .enable     (w_pc)          ,
+    .h_flag     (h_flag)        ,
     .i_inc      (inc_line)      ,
     .o_pc       (pc_line)
 );
@@ -51,8 +52,6 @@ decoder
     .OPBTS      (OPBITS)
 )    DEC
 (
-    .i_rst      (i_rst)         ,
-    .i_clk      (i_clk)         ,
     .op_code    (op_line)       ,
     .sel_A      (sel_A)         ,
     .sel_B      (sel_B)         ,

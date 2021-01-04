@@ -84,6 +84,7 @@ dm_ram  #(
 (
     .i_Addr         (o_Addr_ram)    ,
     .i_Data         (o_Data)        ,
+    .i_clock        (i_clock)       ,
     .Wr             (w_ram)         ,
     .Rd             (r_ram)         ,
     .o_Data         (i_Data_ram)

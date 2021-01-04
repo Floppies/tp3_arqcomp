@@ -25,7 +25,7 @@ initial
         i_reset     =       1'b1    ;
         i_clock     =       1'b1    ;
         
-        #10
+        #5
         i_reset     =       1'b0    ;
         
         #100000000
@@ -33,9 +33,10 @@ initial
     end
 
 always begin
-    #10
+    #5
     i_clock = ~i_clock;
 end
+
 full_top    #(
     .BITS           (BITS)          ,
     .DTBITS         (DTBITS)        ,
