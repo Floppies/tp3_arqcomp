@@ -5,7 +5,7 @@ Trabajo Practico de Laboratorio Numero 3: BIPS I
 
 Implementar un procesador basico para la educacion especificado en el paper "A Basic Processor for Teaching Digital Circuits and Systems Design with FPGA". En especifico, solo se tiene que implementar el BIP I, la version mas simple que no incluye las instrucciones de salto. Ademas, se tiene que agregar un modulo transmisor UART para mandar el valor actual del acumulador.
 
-<img src="imagenes/DiagramaCompleto.png" alt="Diagrama Completo Simple" width="400"/>
+<img src="imagenes/DiagramaCompleto.PNG" alt="Diagrama Completo Simple" width="800"/>
 
 ## Arquitectura
 
@@ -17,32 +17,32 @@ Los registros estan limitados. Solo se usan 2:
 - El Contadr de Programa (PC, Program Counter): que guarda la direccion de la instruccion actual.
 - El Acumulador (ACC; Accumulator): que trabaja como el operando implicito para muchas instrucciones.
 
-<img src="imagenes/DiagramaCompletoC.png" alt="Diagrama Completo Complejo" width="400"/>
+<img src="imagenes/DiagramaCompletoC.PNG" alt="Diagrama Completo Complejo" width="800"/>
 
 ### Funcionamiento
 
 El Procesador lee las instrucciones que se encuentran en la memoria del programa. El set de instrucciones es el siguiente.
 
-<img src="imagenes/InstSet.png" alt="lista DE OPERACIONES" width="400"/>
+<img src="imagenes/InstSet.PNG" alt="lista DE OPERACIONES" width="800"/>
 
 ### Formato de instruccion
 
 - Opcode: es un campo de 5 bits que identifica la operacion que se debe ejecutar segun la instruccion.
 - Operand: es un campo de 11 bits que identifica un operando para la instruccion. Puede representar un dato literal o una direccion dentro de la memoria de datos.
 
-<img src="imagenes/InstFormat.png" alt="lista DE OPERACIONES" width="400"/>
+<img src="imagenes/InstFormat.PNG" alt="lista DE OPERACIONES" width="800"/>
 
 ### Espacio de memoria
 
 El espacio de direccionamiento de memoria esta organizado en un espacio para la memoria de programa de 2K palabras y un espacio de memoria de datos de 1K palabras. También hay una espacio de dispositivos de entrada y salida de 1K palabras que sirven para iustrar el acceso a drivers basicos como LEDs y otros perifericos mas complejos.
 
-<img src="imagenes/AddrSpace.png" alt="Espacio de direcciones" width="400"/>
+<img src="imagenes/AddrSpace.PNG" alt="Espacio de direcciones" width="800"/>
 
 ## Organizacion
 
 Al esquema que se encuentra en el paper se le agrego tambien un modulo UART para satisfacer el requerimiento de transmitir en serie el valor del ACC cuando termina el programa.
 
-<img src="imagenes/TopEsquematico.png" alt="DIAGRAMA COMPLETO" width="800"/>
+<img src="imagenes/TopEsquematico.PNG" alt="DIAGRAMA COMPLETO" width="800"/>
 
 ### Modulo CONTROL
 
@@ -52,7 +52,7 @@ Toma las instrucciones de la memoria de programa, las decodifica y manda todas l
 - Incrementador (INC): Es un sumador que le suma 1 a la direccion que esta en el PC.
 - Decodificador (DEC, Decoder): Es un circuito puramente combinacional que decodifica la operación que se encuentra en los bits mas significativos de la instruccion, el Opcode. Al procesarlo, manda todas las señales de control necesarias al Datapath.
 
-<img src="imagenes/EsquematicoCONTROL.png" alt="Control schematic" width="800"/>
+<img src="imagenes/EsquematicoCONTROL.PNG" alt="Control schematic" width="800"/>
 
 ### Modulo DATAPATH
 
@@ -63,25 +63,25 @@ Procesa los datos segun los comandos enviado por el bloque de Control. Incluye l
 - Extension de señal (Signal Extension): Es un bloque que extiende la señal de 11 bit a 16.
 - Dos multiplexores: uno que maneja la entrada al acumulador entre la salida de la ALU, la señal extendida o la entrada de la memoria de datos; y otro que elige una de las entradas de la ALU entre la señal extendida y lo que entra desde la memoria de datos.
 
-<img src="imagenes/EsquematicoDATAPATH.png" alt="Datapath schematic" width="800"/>
+<img src="imagenes/EsquematicoDATAPATH.PNG" alt="Datapath schematic" width="800"/>
 
 ### Memoria de Programa
 
 Esta implementada como una memoria ROM de palabras de 16 bits y un espacio de direccion de 11 bits(2K Words).
 
-<img src="imagenes/EsquematicoPMROM.png" alt="PMROM schematic" width="800"/>
+<img src="imagenes/EsquematicoPMROM.PNG" alt="PMROM schematic" width="800"/>
 
 ### Memoria de Datos
 
 Esta implementada como una memoria RAM de palabras de 16 bits y un espacio de direccion de 11 bits(2K Words). Su lectura y escritura son sincronas al clock.
 
-<img src="imagenes/EsquematicoDMRAM.png" alt="DMRAM schematic" width="800"/>
+<img src="imagenes/EsquematicoDMRAM.PNG" alt="DMRAM schematic" width="800"/>
 
 ### Modulo UART
 
 Es el mismo modulo implementado en el TP2 aunque sin el receptor. El Baudrate es de 9600 para un reloj de 50MHz. 
 
-<img src="imagenes/EsquematicoUART.png" alt="UART schematic" width="800"/>
+<img src="imagenes/EsquematicoUART.PNG" alt="UART schematic" width="800"/>
 
 ### Clocking Wizard
 
@@ -89,7 +89,7 @@ Se usa este modulo para tener mayor control en la señal de clock que va a ingre
 
 Como necesita un tiempo para estabilizar, hay una señal llamada locked que señala cuando la salida del Clock Wizard es estable. Se toma esta señal como un reset para el resto del circuito. En este caso tarda mas o menos 500 ns.
 
-<img src="imagenes/lockedCW.png" alt="Clocking Wizard" width="800"/>
+<img src="imagenes/lockedCW.PNG" alt="Clocking Wizard" width="800"/>
 
 ## Testing
 
@@ -118,20 +118,20 @@ El dato que se deberia enviar al ultimo es h0006.
 
 Se puede observar como las instrucciones son terminadas en un solo ciclo de Clock. En el flanco de subida se ingresa la nueva instruccion y los valores de las memorias; y en el flanco de bajada se actualiza el valor del acumulador (o_Data). Ademas, se denota que el acumulador actualiza sus valores correctamente segun lo que esta en el programa de prueba.
 
-<img src="imagenes/SimBehavInst.png" alt="Simulacion del comportamiento, monociclo" width="800"/>
+<img src="imagenes/SimBehavInst.png" alt="Simulacion del comportamiento, monociclo" width="1000"/>
 
 Aqui se puede visualizar que, una vez terminado el procesamiiento del programa entero y se llega a la instruccion HALT, se manda la se;al tx_done al transmisor UART y este transmite el valor del acumulador (en este caso un h0006).
 
-<img src="imagenes/SimBehavUART.png" alt="Simulacion del comportamiento, UART" width="800"/>
+<img src="imagenes/SimBehavUART.PNG" alt="Simulacion del comportamiento, UART" width="800"/>
 
 ### Simulación Post-Sintesis con tiempo
 
 Se ve el mismo resultado del procesamiento de instruccion. Hay mas ruido en la entrada de datos que vienen desde la ROM pero, como todo esta sincronizado al clock y los cambios del pc y acumuludar se hacen en el flanco de bajada donde los datos ya estan estables, no hay errores en los calculos. Se obvio la transmision de la señal por el UART ya que toma mucho mas tiempo en comparacion a los otros procesos.
 
-<img src="imagenes/SimTim.png" alt="Simulacion con timing" width="800"/>
+<img src="imagenes/SimTim.PNG" alt="Simulacion con timing" width="800"/>
 
 ### Analisis de Timing
 
 El analisis de Timing es favorable.
 
-<img src="imagenes/AnalisisTiming.png" alt="Analisis de timing" width="800"/>
+<img src="imagenes/AnalisisTiming.PNG" alt="Analisis de timing" width="800"/>
