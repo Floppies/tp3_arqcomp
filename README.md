@@ -69,13 +69,13 @@ Procesa los datos segun los comandos enviado por el bloque de Control. Incluye l
 
 Esta implementada como una memoria ROM de palabras de 16 bits y un espacio de direccion de 11 bits(2K Words).
 
-<img src="imagenes/EsquematicoPMROM.PNG" alt="PMROM schematic" width="800"/>
+<img src="imagenes/EsquematicoPMROM.PNG" alt="PMROM schematic" width="400"/>
 
 ### Memoria de Datos
 
 Esta implementada como una memoria RAM de palabras de 16 bits y un espacio de direccion de 11 bits(2K Words). Su lectura y escritura son sincronas al clock.
 
-<img src="imagenes/EsquematicoDMRAM.PNG" alt="DMRAM schematic" width="800"/>
+<img src="imagenes/EsquematicoDMRAM.PNG" alt="DMRAM schematic" width="400"/>
 
 ### Modulo UART
 
@@ -89,7 +89,7 @@ Se usa este modulo para tener mayor control en la señal de clock que va a ingre
 
 Como necesita un tiempo para estabilizar, hay una señal llamada locked que señala cuando la salida del Clock Wizard es estable. Se toma esta señal como un reset para el resto del circuito. En este caso tarda mas o menos 500 ns.
 
-<img src="imagenes/lockedCW.PNG" alt="Clocking Wizard" width="800"/>
+<img src="imagenes/LockedCW.PNG" alt="Clocking Wizard" width="800"/>
 
 ## Testing
 
