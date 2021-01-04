@@ -87,13 +87,17 @@ Es el mismo modulo implementado en el TP2 aunque sin el receptor. El Baudrate es
 
 Se usa este modulo para tener mayor control en la señal de clock que va a ingresar a los modulos. El parametro que se especifico fue solamente la frecuencia del clock pero se puede jugar con el jitter, los delays, etc. Se setea la salida a 50MHz.
 
+Como necesita un tiempo para estabilizar, hay una señal llamada locked que señala cuando la salida del Clock Wizard es estable. Se toma esta señal como un reset para el resto del circuito. En este caso tarda mas o menos 500 ns.
+
+<img src="imagenes/lockedCW.png" alt="Clocking Wizard" width="800"/>
+
 ## Testing
 
 Se hicieron varios testbench para probar la funcionalidad de cada modulo en particular. Todos estos tienen una metodologia no automatizada y son bastante simples de entender. Luego se realizo un testbench del sistema completo.
 
 ### Testing completo
 
-Para el test completo se redujeron los tamaños de las memorias por simplicidad. El programa que se utilizo para la prueba es el siguente.
+Para el test completo se redujeron los tamaños de las memorias por simplicidad. Ambas tienen solo 9 lugares (son paramatrizables). El programa que se utilizo para la prueba es el siguente.
 
 ``` v
 0001100000000100 //LDI 4
@@ -112,22 +116,22 @@ El dato que se deberia enviar al ultimo es h0006.
 
 ### Simulación de comportamiento
 
-EXPLICARLA.
+Se puede observar como las instrucciones son terminadas en un solo ciclo de Clock. En el flanco de subida se ingresa la nueva instruccion y los valores de las memorias; y en el flanco de bajada se actualiza el valor del acumulador (o_Data). Ademas, se denota que el acumulador actualiza sus valores correctamente segun lo que esta en el programa de prueba.
 
-<img src="imagenes/SimulacionComportamiento.png" alt="Simulacion del comportamiento" width="800"/>
+<img src="imagenes/SimBehavInst.png" alt="Simulacion del comportamiento, monociclo" width="800"/>
+
+Aqui se puede visualizar que, una vez terminado el procesamiiento del programa entero y se llega a la instruccion HALT, se manda la se;al tx_done al transmisor UART y este transmite el valor del acumulador (en este caso un h0006).
+
+<img src="imagenes/SimBehavUART.png" alt="Simulacion del comportamiento, UART" width="800"/>
 
 ### Simulación Post-Sintesis con tiempo
 
-EXPLICAR
+Se ve el mismo resultado del procesamiento de instruccion. Hay mas ruido en la entrada de datos que vienen desde la ROM pero, como todo esta sincronizado al clock y los cambios del pc y acumuludar se hacen en el flanco de bajada donde los datos ya estan estables, no hay errores en los calculos. Se obvio la transmision de la señal por el UART ya que toma mucho mas tiempo en comparacion a los otros procesos.
 
-<img src="imagenes/SimulacionTiming.png" alt="Simulacion con timing" width="800"/>
+<img src="imagenes/SimTim.png" alt="Simulacion con timing" width="800"/>
 
 ### Analisis de Timing
 
-Analisis. Explicar los clocks.
+El analisis de Timing es favorable.
 
 <img src="imagenes/AnalisisTiming.png" alt="Analisis de timing" width="800"/>
-
-### Errores encontrados
-
-Contar los erroes.
