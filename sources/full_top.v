@@ -15,7 +15,6 @@ module full_top #(
 (
     input       wire                    i_clock     ,
     input       wire                    i_reset     ,
-    output      reg                     flag        ,
     output      wire    [BITS-1:0]      o_Data      ,
     output      wire            tx  ,   tx_done
 );
@@ -27,23 +26,6 @@ wire                    w_ram   ,   r_ram       ;
 wire                    clk_out1    ,   locked  ;
 wire                    halt_flag               ;
 
-reg                     reset                   ;
-
-always  @(clk_out1, locked)
-begin
-    if(locked)
-        flag    <=   1'b1    ;
-    else
-        flag    <=   1'b0    ;
-end
-
-always  @(clk_out1, flag)
-begin
-    if(flag)
-        reset   <=  1'b0    ;
-    else
-        reset   <=  1'b1    ;
-end
 
 processor   #(
     .BITS           (BITS)          ,
@@ -53,7 +35,7 @@ processor   #(
 )   PROCPROC
 (
     .i_clock        (clk_out1)      ,
-    .i_reset        (reset)         ,
+    .i_reset        (~locked)       ,
     .i_Data_rom     (i_Data_rom)    ,
     .i_Data_ram     (i_Data_ram)    ,
     .o_Data_ram     (o_Data)        ,
@@ -104,7 +86,7 @@ clk_wiz_0 CLKCLK
 uart_full   UARTTX
 (
     .i_clock        (clk_out1)      ,
-    .i_reset        (reset)         ,
+    .i_reset        (~locked)       ,
     .i_Data         (o_Data)        ,
     .tx_start       (halt_flag)     ,
     .tx_done        (tx_done)       ,
