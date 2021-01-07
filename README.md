@@ -138,4 +138,4 @@ En el analisis de Timing se ve que se cumplen las constraints para una frecuenci
 
 El resultado de Worst Negative Slack denota cual es la frecuencia maxima que se puede utilizar en este diseño. La frecuencia máxima es 73 MHz, aproximadamente. El calculo es el siguiente:
 
-<img src="imagenes/MaxFreq.PNG" alt="Frecuencia Maxima" width="800"/>
+<img src="imagenes/MaxFreq.PNG" alt="Frecuencia Maxima" width="400"/>
