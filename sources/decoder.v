@@ -10,8 +10,7 @@ module decoder  #(
     output  reg                 w_acc   ,   //  Habilita la escritura el acumulador en el DATAPATH
     output  reg                 w_ram   ,   //  Habilita la escritura en la memoria de datos (RAM)
     output  reg                 w_pc    ,   //  Habilita la escritura del PC
-    //output  reg                 r_pc    ,   //  Resetea al PC
-    output  reg                 h_flg   ,
+    output  reg                 h_flg   ,   //  Bandera que señala una instruccion de HALT
     output  reg                 r_ram   ,   //  Habilita la lectura de la memoria de datos (RAM)
     output  reg                 o_op        //  Operacion que se va a realizar en la ALU
 );
@@ -95,11 +94,11 @@ always  @(*)
 begin
     case    (op_code)
         HLT:
-            w_acc       <=      1'b0    ;
+            w_acc       =       1'b0    ;
         STO:
-            w_acc       <=      1'b0    ;
+            w_acc       =       1'b0    ;
         default:
-            w_acc       <=      1'b1    ;
+            w_acc       =       1'b1    ;
     endcase
 end
 
@@ -108,9 +107,9 @@ always  @(*)
 begin
     case    (op_code)
         STO:
-            w_ram       <=      1'b1    ;
+            w_ram       =       1'b1    ;
         default:
-            w_ram       <=      1'b0    ;
+            w_ram       =       1'b0    ;
     endcase
 end
 
@@ -119,9 +118,9 @@ always  @(*)
 begin
     case    (op_code)
         HLT:
-            w_pc        <=      1'b0    ;
+            w_pc        =       1'b0    ;
         default:
-            w_pc        <=      1'b1    ;
+            w_pc        =       1'b1    ;
     endcase
 end
 
@@ -129,9 +128,9 @@ end
 always  @(*)
 begin
     if  (op_code == HLT)
-        h_flg       <=      1'b1    ;
+        h_flg       =       1'b1    ;
     else
-        h_flg       <=      1'b0    ;    
+        h_flg       =       1'b0    ;    
 end
 
 endmodule

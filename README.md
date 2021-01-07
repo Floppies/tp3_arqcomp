@@ -132,6 +132,10 @@ Se ve el mismo resultado del procesamiento de instruccion. Hay mas ruido en la e
 
 ### Analisis de Timing
 
-El analisis de Timing es favorable.
+En el analisis de Timing se ve que se cumplen las constraints para una frecuencia de 50MHz.
 
 <img src="imagenes/AnalisisTiming.PNG" alt="Analisis de timing" width="800"/>
+
+El resultado de Worst Negative Slack denota cual es la frecuencia maxima que se puede utilizar en este diseño. La frecuencia máxima es 73 MHz, aproximadamente. El calculo es el siguiente:
+
+<img src="imagenes/MaxFreq.PNG" alt="Frecuencia Maxima" width="800"/>
